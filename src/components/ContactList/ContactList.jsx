@@ -1,8 +1,9 @@
 import PropTypes from "prop-types";
-
+import { connect } from "react-redux";
+import actions from "../../redux/actions";
 import ContactItem from "./ContactItem";
 
-export default function ContactList({ contacts, onContactDel }) {
+function ContactList({ contacts, onContactDel }) {
   return (
     <ul>
       {contacts.map((contact) => (
@@ -19,3 +20,18 @@ export default function ContactList({ contacts, onContactDel }) {
 ContactList.propTypes = {
   contacts: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
 };
+
+const filteredContacts = (contacts, filter) =>
+  contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
+const mapStateToProps = ({ contacts }) => ({
+  contacts: filteredContacts(contacts.items, contacts.filter),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onContactDel: (id) => dispatch(actions.deleteContact(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactList);
